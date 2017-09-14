@@ -1,6 +1,0 @@
-root@kali:~# git config --global user.name "Ramakandra"
-root@kali:~# git config --global user.email "ramakandra@protonmail.com"
-root@kali:~# git config --list
-
-
-
