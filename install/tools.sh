@@ -130,10 +130,6 @@ echo -e "\n${GREEN}[+]${RESET} set nano as default editor"
 echo "set EDITOR='nano'"  >> ~/.bashrc
 echo "$EDITOR" >> ~/.bashrc
 
-# set directory colors from .dircolorsrc
-echo -e "\n${GREEN}[+]${RESET} set directory colors from .dircolorsrc"
-echo "eval '`dircolors -b ~/.dircolorsrc`'" >> ~/.bashrc
-
 # show all current internet connections of running processes
 echo -e "\n${GREEN}[+]${RESET} show all current internet connections of running processes"
 echo "alias internet='lsof -P -i -n'" >> ~/.bashrc
