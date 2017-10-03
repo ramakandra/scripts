@@ -7,7 +7,7 @@ BLUE="\033[01;34m"     # Heading
 BOLD="\033[01;01m"     # Highlight
 RESET="\033[00m"       # Normal
 
-BANNER="\n${BOLD}[!] ${RED}[RAMAKANDRA]${RESET}"
+BANNER="\n${BOLD}[!] ${RED}[RAMAKANDRA INFORMATION SECURITY]${RESET}"
 for i in {1}
 do
   echo -e $BANNER
