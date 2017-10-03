@@ -106,7 +106,7 @@ while read ip; do
     if [[ $proto == "tcp" || $proto == "all" ]]; then 
         echo -e "${BLUE}[+]${RESET} Obtaining all open TCP ports using unicornscan..."
         echo -e "${BLUE}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt"
-        unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt
+        unicornscan -v -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt
         ports=$(cat "${log_dir}/udir/${ip}-tcp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $ports ]]; then 
             # nmap follows up
@@ -122,7 +122,7 @@ while read ip; do
     if [[ $proto == "udp" || $proto == "all" ]]; then  
         echo -e "${BLUE}[+]${RESET} Obtaining all open UDP ports using unicornscan..."
         echo -e "${BLUE}[+]${RESET} unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt"
-        unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt
+        unicornscan -v -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt
         ports=$(cat "${log_dir}/udir/${ip}-udp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $ports ]]; then
             # nmap follows up
@@ -137,3 +137,5 @@ done < ${targets}
 
 echo -e "${BLUE}[+]${RESET} Scans completed"
 echo -e "${BLUE}[+]${RESET} Results saved to ${log_dir}"
+
+nikto -h ${ip}
