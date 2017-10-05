@@ -11,23 +11,24 @@ clear
 
 function banner {
 
-echo "                               __                   __          "
-echo "   _________ _____ ___  ____ _/ /______ _____  ____/ /________ _" 
-echo "  / ___/ __  / __  __ \/ __  / //_/ __  / __ \/ __  / ___/ __  /"
-echo " / /  / /_/ / / / / / / /_/ / ,< / /_/ / / / / /_/ / /  / /_/ / "
-echo "/_/   \__,_/_/ /_/ /_/\__,_/_/|_|\__,_/_/ /_/\__,_/_/   \__,_/  "
-echo "                                                                "
-echo ""
+echo "                                 __                   __          "
+echo "     _________ _____ ___  ____ _/ /______ _____  ____/ /________ _" 
+echo "    / ___/ __  / __  __ \/ __  / //_/ __  / __ \/ __  / ___/ __  /"
+echo "   / /  / /_/ / / / / / / /_/ / ,< / /_/ / / / / /_/ / /  / /_/ / "
+echo "  /_/   \__,_/_/ /_/ /_/\__,_/_/|_|\__,_/_/ /_/\__,_/_/   \__,_/  "
+echo "                                                                  "
+echo "---------------------------------------------------------------------------"
 
 }
 
 function usage {
-    echo "Usage: $0 -t targets.txt [-p tcp/udp/all] [-i interface] [-n nmap-options] [-h]"
+    echo "Usage: $0 -t targets.txt [-p tcp/udp/all] [-i interface] [-n nmap-options][-h]"
     echo "       -h: Help"
     echo "       -t: File containing ip addresses to scan. This option is required."
     echo "       -p: Protocol. Defaults to tcp"
     echo "       -i: Network interface. Defaults to eth0"
     echo "       -n: NMAP options (-A, -O, etc). Defaults to no options."
+    echo "---------------------------------------------------------------------------"
 }
 
 
@@ -103,13 +104,17 @@ rm -rf "${log_dir}/udir/"
 mkdir -p "${log_dir}/udir/"
 
 while read ip; do
-    echo ""
+    echo "---------------------------------------------------------------------------"
     echo -e "${GREEN}[+]${RESET} Scanning $ip for $proto ports..."
+    echo "---------------------------------------------------------------------------"
 
     # unicornscan identifies all open TCP ports
     if [[ $proto == "tcp" || $proto == "all" ]]; then 
-        echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan..."
-        echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt"
+        echo -e "---------------------------------------------------------------------------"
+	echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan..."
+        echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a"
+	echo -e "${GREEN}[+]${RESET} -l ${log_dir}/udir/${ip}-tcp.txt" 
+	echo -e "---------------------------------------------------------------------------"
         unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt
         ports=$(cat "${log_dir}/udir/${ip}-tcp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $ports ]]; then 
@@ -124,78 +129,126 @@ while read ip; do
 
     # unicornscan identifies all open UDP ports
     if [[ $proto == "udp" || $proto == "all" ]]; then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Obtaining all open UDP ports using unicornscan..."
-        echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt"
+        echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mU ${ip}:a"
+	echo -e "${GREEN}[+]${RESET} -l ${log_dir}/udir/${ip}-udp.txt"
+	echo -e "---------------------------------------------------------------------------"
         unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt
         uports=$(cat "${log_dir}/udir/${ip}-udp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $uports ]]; then
             # nmap follows up
             echo -e "${GREEN}[*]${RESET} UDP ports for nmap to scan: $uports"
-            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}"
-            nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}
+            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml" 
+	    echo -e "${BLUE}[+]${RESET} -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}"
+	          
+	    nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}
         else
+	    echo -e "---------------------------------------------------------------------------"
             echo -e "${RED}[!]${RESET} No UDP ports found"
+            echo -e "---------------------------------------------------------------------------"
         fi
     fi
 
-
 echo ""
 echo ""
-echo -e "${GREEN}[+]${RESET} Check $ip for web services ..."
 
 if [[ ${ports} =~ .*80.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
 	echo -e "${GREEN}[+]${RESET} Port 80 found, starting Whatweb"
-	whatweb ${ip}
+	echo -e "---------------------------------------------------------------------------"
+	whatweb -a 4 ${ip}
 
 elif [[ ${ports} =~ .*443.* ]]
 then
-        echo -e "${GREEN}[+]${RESET} Port 443 found, starting Whatweb"
-        whatweb ${ip}
+        echo -e "---------------------------------------------------------------------------"
+	echo -e "${GREEN}[+]${RESET} Port 443 found, starting Whatweb"
+	echo -e "---------------------------------------------------------------------------"
+        whatweb -a 4 ${ip}
 else
+	echo -e "---------------------------------------------------------------------------"
 	echo -e "${RED}[!]${RESET} Skipped: whatweb: Port 80 or 443 not found in scan"
+	echo -e "---------------------------------------------------------------------------"
+fi
+
+
+if [[ ${ports} =~ .*80.* ]]
+then
+	echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Port 80 found, fetching robots.txt"
+	echo -e "---------------------------------------------------------------------------"
+	wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0" -c http://${ip}/robots.txt
+	cat robots.txt
+elif [[ ${ports} =~ .*443.* ]]
+then
+	echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Port 443 found, fetching robots.txt"
+	echo -e "---------------------------------------------------------------------------"
+        wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0" -c http://${ip}/robots.txt
+	cat robots.txt
+else
+	echo -e "---------------------------------------------------------------------------"
+        echo -e "${RED}[!]${RESET} Skipped: robots.txt: Port 80 or 443 not found in scan"
+	echo -e "---------------------------------------------------------------------------"
 fi
 
 if [[ ${ports} =~ .*80.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
        	echo -e "${GREEN}[+]${RESET} Port 80 found, starting Nikto"
+	echo -e "---------------------------------------------------------------------------"
 	nikto -h ${ip}
 
 elif [[ ${ports} =~ .*443.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Port 443 found, starting Nikto"
+	echo -e "---------------------------------------------------------------------------"
         nikto -h ${ip}
-
 else
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${RED}[!]${RESET} Skipped: nikto: Port 80 or 443 not found in scan"
+	echo -e "---------------------------------------------------------------------------"
 fi
 
-echo ""
 echo ""
 
 
 if [[ ${ports} =~ .*135.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Port 135 found, starting Enum4linux"
+	echo -e "---------------------------------------------------------------------------"
         enum4linux -a ${ip}
 elif [[ ${ports} =~ .*137.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Port 137 found, starting Enum4linux"
+	echo -e "---------------------------------------------------------------------------"
         enum4linux -a ${ip}
 elif [[ ${ports} =~ .*139.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Port 139 found, starting Enum4linux"
+	echo -e "---------------------------------------------------------------------------"
         enum4linux -a ${ip}
 elif [[ ${ports} =~ .*445.* ]]
 then
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Port 445 found, starting Enum4linux"
+	echo -e "---------------------------------------------------------------------------"
         enum4linux -a ${ip}
 else
+	echo -e "---------------------------------------------------------------------------"
         echo -e "${RED}[!]${RESET} Skipped: Netbios ports not found in scan"
+	echo -e "---------------------------------------------------------------------------"
 fi
 
 
 done < ${targets}
-
+echo -e "---------------------------------------------------------------------------"
 echo -e "${GREEN}[+]${RESET} Scans completed"
 echo -e "${GREEN}[+]${RESET} Results saved to ${log_dir}"
+echo -e "---------------------------------------------------------------------------"
+
