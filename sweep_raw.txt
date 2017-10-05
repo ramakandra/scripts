@@ -1,0 +1,21 @@
+# Nmap 7.60 scan initiated Wed Oct  4 14:24:18 2017 as: nmap -sP -oG sweep_raw.txt 192.168.2.0/24
+Host: 192.168.2.2 (chromecast.home)	Status: Up
+Host: 192.168.2.3 ()	Status: Up
+Host: 192.168.2.4 ()	Status: Up
+Host: 192.168.2.5 (192.168.2.5)	Status: Up
+Host: 192.168.2.6 ()	Status: Up
+Host: 192.168.2.7 ()	Status: Up
+Host: 192.168.2.8 (192.168.2.8)	Status: Up
+Host: 192.168.2.9 ()	Status: Up
+Host: 192.168.2.11 ()	Status: Up
+Host: 192.168.2.12 (qca7450-d160786.home)	Status: Up
+Host: 192.168.2.13 ()	Status: Up
+Host: 192.168.2.15 ()	Status: Up
+Host: 192.168.2.17 (192.168.2.17)	Status: Up
+Host: 192.168.2.18 ()	Status: Up
+Host: 192.168.2.21 ()	Status: Up
+Host: 192.168.2.250 (192.168.2.250)	Status: Up
+Host: 192.168.2.253 ()	Status: Up
+Host: 192.168.2.254 ()	Status: Up
+Host: 192.168.2.14 (kali.home)	Status: Up
+# Nmap done at Wed Oct  4 14:24:23 2017 -- 256 IP addresses (19 hosts up) scanned in 4.52 seconds

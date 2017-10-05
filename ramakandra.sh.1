@@ -7,8 +7,6 @@ RED=$ESC"31m"
 GREEN=$ESC"32m"
 BLUE=$ESC"34m"
 
-clear
-
 function banner {
 
 echo "                               __                   __          "
@@ -117,7 +115,7 @@ while read ip; do
             # nmap follows up
             echo -e "${BLUE}[*]${RESET} TCP ports for nmap to scan: $ports"
             echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip}"
-            nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip} 
+            nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip} --script=http-headers.nse
         else
             echo -e "${RED}[!]${RESET} No TCP ports found"
         fi
@@ -143,6 +141,7 @@ while read ip; do
 echo ""
 echo ""
 echo -e "${GREEN}[+]${RESET} Check $ip for web services ..."
+echo -e "${GREEN}[+]${RESET} Running Whatweb"
 echo ""
 echo ""
 
@@ -150,13 +149,8 @@ if [[ ${ports} =~ .*80.* ]]
 then
 	echo -e "${GREEN}[+]${RESET} Port 80 found, starting Whatweb"
 	whatweb ${ip}
-
-elif [[ ${ports} =~ .*443.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 443 found, starting Whatweb"
-        whatweb ${ip}
 else
-	echo -e "${RED}[!]${RESET} Skipped: whatweb: Port 80 or 443 not found in scan"
+	echo -e "${RED}[!]${RESET} Skipped: whatweb: Port 80 not found in scan"
 fi
 
 echo ""
@@ -166,45 +160,12 @@ if [[ ${ports} =~ .*80.* ]]
 then
        	echo -e "${GREEN}[+]${RESET} Port 80 found, starting Nikto"
 	nikto -h ${ip}
-
-elif [[ ${ports} =~ .*443.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 443 found, starting Nikto"
-        nikto -h ${ip}
-
 else
-        echo -e "${RED}[!]${RESET} Skipped: nikto: Port 80 or 443 not found in scan"
+        echo -e "${RED}[!]${RESET} Skipped: nikto: Port 80 not found in scan"
 fi
 
 echo ""
 echo ""
-
-
-
-if [[ ${ports} =~ .*135.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 135 found, starting Enum4linux"
-        enum4linux -a ${ip}
-elif [[ ${ports} =~ .*137.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 137 found, starting Enum4linux"
-        enum4linux -a ${ip}
-elif [[ ${ports} =~ .*139.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 139 found, starting Enum4linux"
-        enum4linux -a ${ip}
-elif [[ ${ports} =~ .*445.* ]]
-then
-        echo -e "${GREEN}[+]${RESET} Port 445 found, starting Enum4linux"
-        enum4linux -a ${ip}
-else
-        echo -e "${RED}[!]${RESET} Skipped: Netbios ports not found in scan"
-fi
-
-echo ""
-echo ""
-
-
 
 done < ${targets}
 
