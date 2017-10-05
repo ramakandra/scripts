@@ -39,7 +39,7 @@ if [[ ! $(id -u) == 0 ]]; then
 fi
 
 if [[ -z $(which nmap) ]]; then
-    echo -e "${RED}[!]${RESET} Unable to find nmap. Install it and make sure it's in your PATH   environment"
+    echo -e "${RED}[!]${RESET} Unable to find nmap. Install it and make sure it's in your PATH environment"
     exit 1
 fi
 
@@ -105,7 +105,6 @@ mkdir -p "${log_dir}/udir/"
 while read ip; do
     echo ""
     echo -e "${GREEN}[+]${RESET} Scanning $ip for $proto ports..."
-    echo ""
 
     # unicornscan identifies all open TCP ports
     if [[ $proto == "tcp" || $proto == "all" ]]; then 
@@ -128,12 +127,12 @@ while read ip; do
         echo -e "${GREEN}[+]${RESET} Obtaining all open UDP ports using unicornscan..."
         echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt"
         unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt
-        ports=$(cat "${log_dir}/udir/${ip}-udp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
-        if [[ ! -z $ports ]]; then
+        uports=$(cat "${log_dir}/udir/${ip}-udp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
+        if [[ ! -z $uports ]]; then
             # nmap follows up
-            echo -e "${GREEN}[*]${RESET} UDP ports for nmap to scan: $ports"
-            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${ports} ${ip}"
-            nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${ports} ${ip}
+            echo -e "${GREEN}[*]${RESET} UDP ports for nmap to scan: $uports"
+            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}"
+            nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}
         else
             echo -e "${RED}[!]${RESET} No UDP ports found"
         fi
@@ -143,8 +142,6 @@ while read ip; do
 echo ""
 echo ""
 echo -e "${GREEN}[+]${RESET} Check $ip for web services ..."
-echo ""
-echo ""
 
 if [[ ${ports} =~ .*80.* ]]
 then
@@ -158,9 +155,6 @@ then
 else
 	echo -e "${RED}[!]${RESET} Skipped: whatweb: Port 80 or 443 not found in scan"
 fi
-
-echo ""
-echo ""
 
 if [[ ${ports} =~ .*80.* ]]
 then
@@ -178,7 +172,6 @@ fi
 
 echo ""
 echo ""
-
 
 
 if [[ ${ports} =~ .*135.* ]]
@@ -201,12 +194,8 @@ else
         echo -e "${RED}[!]${RESET} Skipped: Netbios ports not found in scan"
 fi
 
-echo ""
-echo ""
-
-
 
 done < ${targets}
 
-echo -e "${BLUE}[+]${RESET} Scans completed"
-echo -e "${BLUE}[+]${RESET} Results saved to ${log_dir}"
+echo -e "${GREEN}[+]${RESET} Scans completed"
+echo -e "${GREEN}[+]${RESET} Results saved to ${log_dir}"
