@@ -28,7 +28,6 @@ function usage {
     echo "       -p: Protocol. Defaults to tcp"
     echo "       -i: Network interface. Defaults to eth0"
     echo "       -n: NMAP options (-A, -O, etc). Defaults to no options."
-    echo "---------------------------------------------------------------------------"
 }
 
 
@@ -104,14 +103,11 @@ rm -rf "${log_dir}/udir/"
 mkdir -p "${log_dir}/udir/"
 
 while read ip; do
-    echo "---------------------------------------------------------------------------"
-    echo -e "${GREEN}[+]${RESET} Scanning $ip for $proto ports..."
-    echo "---------------------------------------------------------------------------"
+    echo -e "${GREEN}[+]${RESET} Scanning $ip for $proto ports"
 
     # unicornscan identifies all open TCP ports
     if [[ $proto == "tcp" || $proto == "all" ]]; then 
-        echo -e "---------------------------------------------------------------------------"
-	echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan..."
+	echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan"
         echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a"
 	echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/udir/${ip}-tcp.txt" 
 	echo -e "---------------------------------------------------------------------------"
@@ -119,9 +115,13 @@ while read ip; do
         ports=$(cat "${log_dir}/udir/${ip}-tcp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $ports ]]; then 
             # nmap follows up
-            echo -e "${BLUE}[*]${RESET} TCP ports for nmap to scan: $ports"
-            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip}"
-            nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip} 
+	    echo -e "${GREEN}[*]${RESET} TCP ports for nmap to scan: $ports"
+            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -oX" 
+	    echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/ndir/${ip}-tcp.xml -oG" 
+	    echo -e "${GREEN}[+]${RESET} ${log_dir}/ndir/${ip}-tcp.grep -p" 
+	    echo -e "${GREEN}[+]${RESET} ${ports} ${ip}"
+            echo -e "---------------------------------------------------------------------------"        
+	    nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip} 
         else
             echo -e "${RED}[!]${RESET} No TCP ports found"
         fi
@@ -132,15 +132,18 @@ while read ip; do
 	echo -e "---------------------------------------------------------------------------"
         echo -e "${GREEN}[+]${RESET} Obtaining all open UDP ports using unicornscan..."
         echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mU ${ip}:a"
-	echo -e "${GREEN}[+]${RESET} -l ${log_dir}/udir/${ip}-udp.txt"
-	echo -e "---------------------------------------------------------------------------"
+	echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/udir/${ip}-udp.txt"
         unicornscan -i ${iface} -mU ${ip}:a -l ${log_dir}/udir/${ip}-udp.txt
         uports=$(cat "${log_dir}/udir/${ip}-udp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
         if [[ ! -z $uports ]]; then
             # nmap follows up
+	    echo -e "---------------------------------------------------------------------------"
             echo -e "${GREEN}[*]${RESET} UDP ports for nmap to scan: $uports"
-            echo -e "${BLUE}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml" 
-	    echo -e "${BLUE}[+]${RESET} -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}"
+            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX" 
+	    echo -e "${GREEN}[*]${RESET} Save output to: ${log_dir}/ndir/${ip}-udp.xml" 
+	    echo -e "${GREEN}[+]${RESET} -oG ${log_dir}/ndir/${ip}-udp.grep -p "
+	    echo -e "${GREEN}[+]${RESET} ${uports} ${ip}"
+	    echo -e "---------------------------------------------------------------------------"
 	          
 	    nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}
         else
@@ -152,9 +155,9 @@ while read ip; do
 
 echo ""
 echo ""
- 	echo -e "---------------------------------------------------------------------------"
-        echo -e "${GREEN}[+]${RESET} Performing nslookup"
-        echo -e "---------------------------------------------------------------------------"
+echo -e "---------------------------------------------------------------------------"
+echo -e "${GREEN}[+]${RESET} Performing nslookup"
+echo -e "---------------------------------------------------------------------------"
 
 nslookup ${ip} > ${log_dir}/ndir/${ip}-nslookup.txt
 cat ${log_dir}/ndir/${ip}-nslookup.txt
@@ -210,7 +213,6 @@ else
 	echo -e "---------------------------------------------------------------------------"
 fi
 
-
 echo ""
 echo ""
 
@@ -234,7 +236,28 @@ else
 fi
 
 echo ""
+echo ""
 
+if [[ ${ports} =~ .*80.* ]]
+then
+        echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Port 80 found, starting Dirb"
+        echo -e "---------------------------------------------------------------------------"
+	dirb http://${ip} /usr/share/dirb/wordlists/common.txt -w | grep DIRECTORY:
+
+elif [[ ${ports} =~ .*443.* ]]
+then
+        echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Port 443 found, starting Dirb"
+        echo -e "---------------------------------------------------------------------------"
+ 	dirb http://${ip} /usr/share/dirb/wordlists/common.txt -w | grep DIRECTORY:
+else
+        echo -e "---------------------------------------------------------------------------"
+        echo -e "${RED}[!]${RESET} Skipped: Dirb: Port 80 or 443 not found in scan"
+        echo -e "---------------------------------------------------------------------------"
+fi
+
+echo ""
 
 if [[ ${ports} =~ .*135.* ]]
 then
