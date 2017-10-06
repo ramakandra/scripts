@@ -113,7 +113,7 @@ while read ip; do
         echo -e "---------------------------------------------------------------------------"
 	echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan..."
         echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a"
-	echo -e "${GREEN}[+]${RESET} -l ${log_dir}/udir/${ip}-tcp.txt" 
+	echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/udir/${ip}-tcp.txt" 
 	echo -e "---------------------------------------------------------------------------"
         unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt
         ports=$(cat "${log_dir}/udir/${ip}-tcp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
@@ -152,26 +152,43 @@ while read ip; do
 
 echo ""
 echo ""
+ 	echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Performing nslookup"
+        echo -e "---------------------------------------------------------------------------"
+
+nslookup ${ip} > ${log_dir}/ndir/${ip}-nslookup.txt
+cat ${log_dir}/ndir/${ip}-nslookup.txt
+
+echo ""
+        echo -e "---------------------------------------------------------------------------"
+        echo -e "${GREEN}[+]${RESET} Filtering domain name for processing"
+        echo -e "---------------------------------------------------------------------------"
+
+domain=$(cat ${log_dir}/ndir/${ip}-nslookup.txt | grep name | cut -f2 -d"=" | cut -c 2- | sed 's/.$//')
+echo $domain
+echo ""
+echo ""
 
 if [[ ${ports} =~ .*80.* ]]
 then
 	echo -e "---------------------------------------------------------------------------"
 	echo -e "${GREEN}[+]${RESET} Port 80 found, starting Whatweb"
 	echo -e "---------------------------------------------------------------------------"
-	whatweb -a 4 ${ip}
-
+	whatweb -v -a 3 -U "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0" ${ip}
 elif [[ ${ports} =~ .*443.* ]]
 then
         echo -e "---------------------------------------------------------------------------"
 	echo -e "${GREEN}[+]${RESET} Port 443 found, starting Whatweb"
 	echo -e "---------------------------------------------------------------------------"
-        whatweb -a 4 ${ip}
+        whatweb -v -a 3 -U "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0" ${ip}
 else
 	echo -e "---------------------------------------------------------------------------"
 	echo -e "${RED}[!]${RESET} Skipped: whatweb: Port 80 or 443 not found in scan"
 	echo -e "---------------------------------------------------------------------------"
 fi
 
+echo ""
+echo ""
 
 if [[ ${ports} =~ .*80.* ]]
 then
@@ -192,6 +209,10 @@ else
         echo -e "${RED}[!]${RESET} Skipped: robots.txt: Port 80 or 443 not found in scan"
 	echo -e "---------------------------------------------------------------------------"
 fi
+
+
+echo ""
+echo ""
 
 if [[ ${ports} =~ .*80.* ]]
 then
