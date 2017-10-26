@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 # Colors
 ESC="\e["
@@ -12,7 +12,7 @@ clear
 function banner {
 
 echo "                                 __                   __          "
-echo "     _________ _____ ___  ____ _/ /______ _____  ____/ /________ _" 
+echo "     _________ _____ ___  ____ _/ /______ _____  ____/ /________ _"
 echo "    / ___/ __  / __  __ \/ __  / //_/ __  / __ \/ __  / ___/ __  /"
 echo "   / /  / /_/ / / / / / / /_/ / ,< / /_/ / / / / /_/ / /  / /_/ / "
 echo "  /_/   \__,_/_/ /_/ /_/\__,_/_/|_|\__,_/_/ /_/\__,_/_/   \__,_/  "
@@ -90,12 +90,12 @@ echo -e "${GREEN}[+]${RESET} Targets  : ${targets}"
 # backup any old scans before we start a new one
 log_dir="${HOME}/.onetwopunch"
 mkdir -p "${log_dir}/backup/"
-if [[ -d "${log_dir}/ndir/" ]]; then 
+if [[ -d "${log_dir}/ndir/" ]]; then
     mv "${log_dir}/ndir/" "${log_dir}/backup/ndir-$(date "+%Y%m%d-%H%M%S")/"
 fi
-if [[ -d "${log_dir}/udir/" ]]; then 
+if [[ -d "${log_dir}/udir/" ]]; then
     mv "${log_dir}/udir/" "${log_dir}/backup/udir-$(date "+%Y%m%d-%H%M%S")/"
-fi 
+fi
 
 rm -rf "${log_dir}/ndir/"
 mkdir -p "${log_dir}/ndir/"
@@ -106,22 +106,22 @@ while read ip; do
     echo -e "${GREEN}[+]${RESET} Scanning $ip for $proto ports"
 
     # unicornscan identifies all open TCP ports
-    if [[ $proto == "tcp" || $proto == "all" ]]; then 
+    if [[ $proto == "tcp" || $proto == "all" ]]; then
 	echo -e "${GREEN}[+]${RESET} Obtaining all open TCP ports using unicornscan"
         echo -e "${GREEN}[+]${RESET} unicornscan -i ${iface} -mT ${ip}:a"
-	echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/udir/${ip}-tcp.txt" 
+	echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/udir/${ip}-tcp.txt"
 	echo -e "---------------------------------------------------------------------------"
         unicornscan -i ${iface} -mT ${ip}:a -l ${log_dir}/udir/${ip}-tcp.txt
         ports=$(cat "${log_dir}/udir/${ip}-tcp.txt" | grep open | cut -d"[" -f2 | cut -d"]" -f1 | sed 's/ //g' | tr '\n' ',')
-        if [[ ! -z $ports ]]; then 
+        if [[ ! -z $ports ]]; then
             # nmap follows up
 	    echo -e "${GREEN}[*]${RESET} TCP ports for nmap to scan: $ports"
-            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -oX" 
-	    echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/ndir/${ip}-tcp.xml -oG" 
-	    echo -e "${GREEN}[+]${RESET} ${log_dir}/ndir/${ip}-tcp.grep -p" 
+            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -oX"
+	    echo -e "${GREEN}[+]${RESET} Save output to: ${log_dir}/ndir/${ip}-tcp.xml -oG"
+	    echo -e "${GREEN}[+]${RESET} ${log_dir}/ndir/${ip}-tcp.grep -p"
 	    echo -e "${GREEN}[+]${RESET} ${ports} ${ip}"
-            echo -e "---------------------------------------------------------------------------"        
-	    nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip} 
+            echo -e "---------------------------------------------------------------------------"
+	    nmap -e ${iface} ${nmap_opt} -oX ${log_dir}/ndir/${ip}-tcp.xml -oG ${log_dir}/ndir/${ip}-tcp.grep -p ${ports} ${ip}
         else
             echo -e "${RED}[!]${RESET} No TCP ports found"
         fi
@@ -139,12 +139,12 @@ while read ip; do
             # nmap follows up
 	    echo -e "---------------------------------------------------------------------------"
             echo -e "${GREEN}[*]${RESET} UDP ports for nmap to scan: $uports"
-            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX" 
-	    echo -e "${GREEN}[*]${RESET} Save output to: ${log_dir}/ndir/${ip}-udp.xml" 
+            echo -e "${GREEN}[+]${RESET} nmap -e ${iface} ${nmap_opt} -sU -oX"
+	    echo -e "${GREEN}[*]${RESET} Save output to: ${log_dir}/ndir/${ip}-udp.xml"
 	    echo -e "${GREEN}[+]${RESET} -oG ${log_dir}/ndir/${ip}-udp.grep -p "
 	    echo -e "${GREEN}[+]${RESET} ${uports} ${ip}"
 	    echo -e "---------------------------------------------------------------------------"
-	          
+
 	    nmap -e ${iface} ${nmap_opt} -sU -oX ${log_dir}/ndir/${ip}-udp.xml -oG ${log_dir}/ndir/${ip}-udp.grep -p ${uports} ${ip}
         else
 	    echo -e "---------------------------------------------------------------------------"
@@ -295,4 +295,3 @@ echo -e "-----------------------------------------------------------------------
 echo -e "${GREEN}[+]${RESET} Scans completed"
 echo -e "${GREEN}[+]${RESET} Results saved to ${log_dir}"
 echo -e "---------------------------------------------------------------------------"
-

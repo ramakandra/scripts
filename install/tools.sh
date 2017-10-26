@@ -7,6 +7,8 @@ BLUE="\033[01;34m"     # Heading
 BOLD="\033[01;01m"     # Highlight
 RESET="\033[00m"       # Normal
 
+clear
+
 BANNER="\n${BOLD}[!] ${RED}[RAMAKANDRA INFORMATION SECURITY]${RESET}"
 for i in {1}
 do
@@ -30,7 +32,11 @@ apt-get dist-upgrade -y
 
 # update apt-get
 echo -e "\n${GREEN}[+]${RESET} Performing ${GREEN}cleanup${RESET}"
-apt-get autoremove
+apt-get autoremove -y
+
+# install kernel headers
+echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}Kernel Headers${RESET}"
+apt-get install linux-headers-$(uname -r)
 
 # SHELL TOOLS
 echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}shell tools${RESET}"
@@ -59,7 +65,7 @@ apt-get install etherape
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}netdiscover${RESET}"
 apt-get install netdiscover
 
-# install or update nikto 
+# install or update nikto
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}nikto${RESET}"
 apt-get install nikto
 
@@ -107,7 +113,7 @@ make install
 
 
 # SET ALIASES
-echo -e "\n${GREEN}[+]${RESET} Set alisases ${GREEN}and write to .bashrc${RESET}"
+echo -e "\n${GREEN}[+]${RESET} Set aliases ${GREEN}and write to .bashrc${RESET}"
 
 # always run mc with the -x switch for mouse support in tmux
 echo -e "\n${GREEN}[+]${RESET} always run mc with the -x switch for mouse support in tmux"
@@ -138,7 +144,7 @@ echo "alias internet='lsof -P -i -n'" >> ~/.bashrc
 echo -e "\n${GREEN}[+]${RESET} colorful tailing of logfiles"
 echo "alias colortail='tail -f /var/log/syslog | ccze -A'" >> ~/.bashrc
 
-# show mounts in pretty columns 
+# show mounts in pretty columns
 echo -e "\n${GREEN}[+]${RESET} show mounts in pretty columns"
 echo "alias mount='mount | column -t'" >> ~/.bashrc
 
@@ -146,3 +152,12 @@ echo "alias mount='mount | column -t'" >> ~/.bashrc
 echo -e "\n${GREEN}[+]${RESET} show my ip"
 echo "alias myip='curl ifconfig.me'" >> ~/.bashrc
 
+# copy tmux preferences to ~/
+echo -e "\n${GREEN}[+]${RESET} copy tmux preferences to ~/"
+cp .tumux* ~/
+
+# create symlinks from scripts to /usr/bin Directory
+echo -e "\n${GREEN}[+]${RESET} creating symlinks"
+ln -s ~/Dropbox/OSCP/scripts/ramakandra.sh /usr/bin/rmk
+ln -s ~/Dropbox/OSCP/scripts/install/update.sh /usr/bin/update
+ln -s ~/Dropbox/OSCP/scripts/install/tools.sh /usr/bin/tools
