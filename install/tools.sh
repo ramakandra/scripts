@@ -38,6 +38,10 @@ apt-get autoremove -y
 echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}Kernel Headers${RESET}"
 apt-get install linux-headers-$(uname -r)
 
+#--- Disable screensaver
+echo -e "\n${GREEN}[+]${RESET} Disable screensaver"
+gsettings set org.gnome.desktop.session idle-delay 0
+
 # SHELL TOOLS
 echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}shell tools${RESET}"
 
