@@ -36,7 +36,12 @@ apt-get autoremove -y
 
 # install kernel headers
 echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}Kernel Headers${RESET}"
-apt-get install linux-headers-$(uname -r)
+apt-get install linux-headers-$(uname -r) -y
+
+# install virtualbox extensions
+echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}Virtualbox Extensions${RESET}"
+apt-get install virtualbox* -y
+apt --fix-broken install
 
 #--- Disable screensaver
 echo -e "\n${GREEN}[+]${RESET} Disable screensaver"
@@ -47,63 +52,63 @@ echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}shell tools${RESET}"
 
 # install or update tmux
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}tmux${RESET}"
-apt-get install tmux
+apt-get install tmux -y
 
 # install or update dnsrecon
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}dnsrecon${RESET}"
-apt-get install dnsrecon
+apt-get install dnsrecon -y
 
 # install or update nmap
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}nmap${RESET}"
-apt-get install nmap
+apt-get install nmap -y
 
 # install or update amap
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}amap${RESET}"
-apt-get install amap
+apt-get install amap -y
 
 # install etherape
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}etherape${RESET}"
-apt-get install etherape
+apt-get install etherape -y
 
 # install or update netdiscover
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}netdiscover${RESET}"
-apt-get install netdiscover
+apt-get install netdiscover -y
 
 # install or update nikto
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}nikto${RESET}"
-apt-get install nikto
+apt-get install nikto -y
 
 # install or update whatweb
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}whatweb${RESET}"
-apt-get install whatweb
+apt-get install whatweb -y
 
 # install or update wpscan
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}wpscan${RESET}"
-apt-get install wpscan
+apt-get install wpscan -y
 
 # install or update ccrypt
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}ccrypt${RESET}"
-apt-get install ccrypt
+apt-get install ccrypt -y
 
 # install or update ccze (required for colortail)
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}ccze${RESET}"
-apt-get install ccze
+apt-get install ccze -y
 
 # install or update ranger
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}ranger${RESET}"
-apt-get install ranger
+apt-get install ranger -y
 
 # install or update midnight commander
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}midnight commander${RESET}"
-apt-get install mc
+apt-get install mc -y
 
 # install or update GIT
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}git${RESET}"
-apt-get install git
+apt-get install git -y
 
 # install or clone commix
 echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}commix${RESET}"
-apt-get install commix
+apt-get install commix -y
 
 # install exiftool
 echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}exiftool${RESET}"
@@ -115,7 +120,6 @@ perl Makefile.PL
 make test
 make install
 
-
 # SET ALIASES
 echo -e "\n${GREEN}[+]${RESET} Set aliases ${GREEN}and write to .bashrc${RESET}"
 
@@ -125,7 +129,7 @@ echo "alias mc='mc -x'" >> ~/.bashrc
 
 # install, update and set  colorful man pages
 echo -e "\n${GREEN}[+]${RESET} install, update and set  colorful man pages"
-apt-get install most && update-alternatives --set pager /usr/bin/most
+apt-get install most && update-alternatives --set pager /usr/bin/most -y
 
 # super update and cleanup
 echo -e "\n${GREEN}[+]${RESET} super update and cleanup"
