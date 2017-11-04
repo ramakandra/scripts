@@ -120,6 +120,11 @@ perl Makefile.PL
 make test
 make install
 
+# install Dropbox
+echo -e "\n${GREEN}[+]${RESET} Install ${GREEN}Dropbox${RESET}"
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+~/.dropbox-dist/dropboxd
+
 # SET ALIASES
 echo -e "\n${GREEN}[+]${RESET} Set aliases ${GREEN}and write to .bashrc${RESET}"
 
@@ -128,7 +133,7 @@ echo -e "\n${GREEN}[+]${RESET} always run mc with the -x switch for mouse suppor
 echo "alias mc='mc -x'" >> ~/.bashrc
 
 # install, update and set  colorful man pages
-echo -e "\n${GREEN}[+]${RESET} install, update and set  colorful man pages"
+echo -e "\n${GREEN}[+]${RESET} install, update and set colorful man pages"
 apt-get install most && update-alternatives --set pager /usr/bin/most -y
 
 # super update and cleanup
@@ -163,6 +168,11 @@ echo "alias myip='curl ifconfig.me'" >> ~/.bashrc
 # copy tmux preferences to ~/
 echo -e "\n${GREEN}[+]${RESET} copy tmux preferences to ~/"
 cp .tumux* ~/
+
+# install cowsay
+apt -y -qq install cowsay \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+echo "Moo" | /usr/games/cowsay > /etc/motd
 
 # create symlinks from scripts to /usr/bin Directory
 echo -e "\n${GREEN}[+]${RESET} creating symlinks"
