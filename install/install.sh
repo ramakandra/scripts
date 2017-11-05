@@ -111,19 +111,19 @@ echo -e "\n${GREEN}[+]${RESET} Install or update ${GREEN}commix${RESET}"
 apt-get install commix -y
 
 # install exiftool
-echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}exiftool${RESET}"
-wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-10.53.tar.gz
-gzip -dc Image-ExifTool-10.53.tar.gz | tar -xf -
-rm Image-ExifTool-10.53.tar.gz
-cd Image-ExifTool-10.53
-perl Makefile.PL
-make test
-make install
+#echo -e "\n${GREEN}[+]${RESET} Installing ${GREEN}exiftool${RESET}"
+#wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-10.53.tar.gz
+#gzip -dc Image-ExifTool-10.53.tar.gz | tar -xf -
+#rm Image-ExifTool-10.53.tar.gz
+#cd Image-ExifTool-10.53
+#perl Makefile.PL
+#make test
+#make install
 
 # install Dropbox
-echo -e "\n${GREEN}[+]${RESET} Install ${GREEN}Dropbox${RESET}"
-cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-~/.dropbox-dist/dropboxd
+#echo -e "\n${GREEN}[+]${RESET} Install ${GREEN}Dropbox${RESET}"
+#cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+#~/.dropbox-dist/dropboxd
 
 # SET ALIASES
 echo -e "\n${GREEN}[+]${RESET} Set aliases ${GREEN}and write to .bashrc${RESET}"
